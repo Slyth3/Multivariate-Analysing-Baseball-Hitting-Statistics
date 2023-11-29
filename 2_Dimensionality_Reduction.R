@@ -1,73 +1,85 @@
+#load libraries
+library(corrplot)
+library(MVA)
 library(ggplot2)
 
 
-# set working directory and outpaths 
-setwd("G:/My Drive/Data Science/University/Texas Tech/Semester 2/Multivariate/Project/")
-filepath = "./cleandata.csv"
-
-
-# Read data
-baseball = read.csv(filepath)
-
+#read in data
+filepath <- ('https://raw.githubusercontent.com/Slyth3/Multivariate-Analysis-Baseball-Hitting-Statistics/main/cleandata.csv')
+baseball <- read.csv(filepath)
+#set rowmnames to player names
 rownames(baseball) <- baseball$Name
-
+#check out data
 head(baseball)
 
-###################################### PROCESS data  ###############################
 #subset interesting columns representative of various talents 
 df <- baseball[,c(1,2,5,7,8,9,10,19,29)]
 
-#scale 
+############### Initial Assessment of Data Correlation #################
+#correlation matrix
+corr.matrix <- round(cor(df[,3:ncol(df)]),3)
+
+#correlation plot
+corrplot(corr.matrix, method = "color",
+         main = "Correlation Plot")
+
+##################### Outlier Investigation ############################
+#scatterplot matrix for initial outlier detection
+plot(df[3:ncol(df)], main = "Scatterplot Matrix")
+var(df$triples)
+
+#bv boxplot of doubles and triples
+plot(df$doubles, df$triples, cex = .3,
+     main = "BV Boxpot Triples and Doubles",
+     xlab = "Doubles",
+     ylab = "Triples")
+#add text to the plot (or comment out lines 35-36 for readability)
+text(df$doubles, df$triples,
+     labels = row.names(df))
+#add bvbox
+bvbox(cbind(df$doubles, df$triples), add = TRUE)
+
+
+#bv boxplot of stolen bases and running speed score
+plot(df$stolen.base, df$running.speed.score, cex = .3,
+     main = "BV Boxplot- Stolen Bases and Running Speed Score",
+     xlab = "Stolen Bases",
+     ylab = "Running Speed Score")
+#add text to the plot (or comment out lines 47-48 for readability)
+text(df$stolen.base, df$running.speed.score,
+    labels = row.names(df))
+#add bvbox
+bvbox(cbind(df$stolen.base, df$running.speed.score), add = TRUE)
+
+
+#bv boxplot of hits and homeruns
+plot(df$hits, df$home.runs, cex = .3,
+     main = "Bivariate Boxplot- Hits and Homeruns",
+     xlab = "Hits",
+     ylab = "Homeruns")
+#add text to the plot (or comment out lines 60-61 for readability)
+text(df$hits, df$home.runs,
+    labels = row.names(df))
+#add bvbox
+bvbox(cbind(df$hits, df$home.runs), add = TRUE)
+
+################################### Conduct PCA #######################################
+#scale data
 df.s <- scale(df[3:ncol(df)])
-
-
-
-####################################### PCA ################################ 
-
-#perform pca
-baseball.pca <- princomp(df.s,scores = TRUE)
-
-# Summary 
+#conduct PCA
+baseball.pca <- princomp(df.s)
+#summary
 summary(baseball.pca, loadings = TRUE)
 
-" we can see that the first to components represents 83% of the data variance
-
-component 1: aligns more to scores and hits than compared to component 2
-Component 2: looks more at running speed and stolen bases "
-
-#  plot PCA scores by names 
+#plot PCA scores by names
 ggplot() +
-  geom_text(aes(x = baseball.pca$scores[,1], 
-                y = baseball.pca$scores[,2], 
+  geom_text(aes(x = baseball.pca$scores[,1],
+                y = baseball.pca$scores[,2],
                 label = df$Name,
-                col = df$Team), 
-            nudge_x = 0.5, nudge_y = 0.5, check_overlap = TRUE)
+                col = df$Team,
+                main = "PCA Scores"),
+            nudge_x = .5, nudge_y = .5, check_overlap = TRUE)
 
-"example: Sam Haggerty should have high running speed but low run.score "
+#biplot
+biplot(baseball.pca, cex = .5, main = "Biplot of PCA Scores")
 
-################################ OTHER PLOTS ################################
-# scaled df 
-df_s <- scale(df[3:ncol(df)])
-pca<- princomp(df_s)
-plot(pca$scores[,1:2])
-
-
-#GGPLOT
-
-library(ggplot2)
-
-#team
-ggplot() +
-  geom_point(aes(x = pca$scores[,1], y = pca$scores[,2], col = df$Team))
-
-#WOBA
-ggplot() +
-  geom_point(aes(x = pca$scores[,1], y = pca$scores[,2], col = df$wOBA))
-
-#hits
-ggplot() +
-  geom_point(aes(x = pca$scores[,1], y = pca$scores[,2], col = df$hits))
-
-
-
-     
