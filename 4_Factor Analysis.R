@@ -80,7 +80,7 @@ det(cov(df[,key_cols]))
 
 # Confirmatory Factor Analysis 
 options(fit.indices = c("GFI", "AGFI", "SRMR"))
-batting_model <- specifyModel(file = paste0(getwd(),outpath,"/CFA_model2.txt") )
+batting_model <- specifyModel(file = paste0(getwd(),outpath,"/CFA_model.txt") )
 
 
 cfa <- sem(batting_model,S= cor(df_s[,key_cols]), N = nrow(df) )
@@ -100,8 +100,5 @@ hitting =~ hits + runs.batted.in + batting.average + hit.batted.ball + bat.exit.
 non.batting =~  + plate.appearances + stolen.base + running.speed.score + Clutch + Wins.above.replacement + Wins.above.replacement + Games.played + plate.appearances
 '
 
-model <- cfa(batting_model, data= df[,key_cols] )
+model <- cfa(batting_model, data= df[,key_cols])
 summary(model)
-
-
-

@@ -1,2 +1,2 @@
-# Multivariate--Analysing-Baseball-Hitting-Statistics
- Analysing major league baseball hitting statistics through Principal Component Analysis, Factor Analysis and Clustering
+# Multivariate Group9: Professional Baseball Hitting Analysis
+ Implementation of multivariate methodologies to analyze baseball batting statistics

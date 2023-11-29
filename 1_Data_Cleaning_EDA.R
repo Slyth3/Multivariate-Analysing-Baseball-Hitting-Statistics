@@ -135,27 +135,6 @@ df<- df %>% rename ('Games.played'='G',
                     'Fielding'='Fielding') 
 
 
-# Define key columns for analysis 
-key_cols <- c('Name',
-              'Team',
-              'plate.appearances',
-              'hits',
-              'home.runs',
-              'runs.scored',
-              'strike.outs',
-              'batting.average',
-              'on.base.perc',
-              'running.speed.score',
-              'Swing.perc',
-              'out.Contact.perc',
-              'in.contact.perc',
-              'Wins.above.replacement')
-
-
-head(df[,key_cols],10)
-#write out key columns
-write.csv(head(df[,key_cols],10), file = paste0(getwd(),outpath,"/key_cols.csv"), row.names = FALSE) 
-
 ################################### Outlier identification based on Z-score ############################
 
 num_cols <-names(select_if(df, is.numeric))
@@ -241,15 +220,13 @@ grp_team[order(grp_team$x,decreasing = TRUE),][1:10,]
 
 ##################################### Correlation #####################################
 # Correlation plot
-cor_df <- cor(df[,key_cols[3:length(key_cols)]]
-              )
+cor_df <- cor(df[,3:length(df)])
 
 col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
-corrplot(cor_df , type="lower", method="color" ,addCoef.col = "black", number.cex= 0.6,  
-         tl.col="black", tl.cex =0.8, col=col(200),diag=FALSE)
+corrplot(cor_df , type="lower", method="color" ,addCoef.col = "black", number.cex= 0.1,  
+         tl.col="black", tl.cex =0.1, col=col(200),diag=FALSE, cex.main = 1, main = "Correlation plot")
 
-# Correlation table *function)
-"https://towardsdatascience.com/how-to-create-a-correlation-matrix-with-too-many-variables-309cc0c0a57"
+# Correlation table function
 
 corr_simple <- function(data=df,sig=0.5){
   df_cor <- data %>% mutate_if(is.character, as.factor)
